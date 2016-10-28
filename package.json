@@ -1,0 +1,29 @@
+{
+  "name": "bamazonappmanali",
+  "version": "1.0.0",
+  "description": "node shopping app",
+  "main": "BamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manalimatkar/Bamazon.git"
+  },
+  "keywords": [
+    "shop",
+    "buy",
+    "products"
+  ],
+  "author": "manali",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manalimatkar/Bamazon/issues"
+  },
+  "homepage": "https://github.com/manalimatkar/Bamazon#readme",
+  "dependencies": {
+    "console.table": "^0.7.0",
+    "inquirer": "^1.2.2",
+    "mysql": "^2.11.1"
+  }
+}
