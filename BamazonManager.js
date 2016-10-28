@@ -32,10 +32,7 @@ var fillProductsArr = function(){
 			productArr.push(result[i]);		
 		}
 	});
-}
-
-
-	
+}	
 
 
 var displayProducts = function(){
@@ -62,6 +59,8 @@ var viewLowInventory = function(){
 
 var updateInventory = function(){
 	// console.log("inside updateInventory");
+
+	// Prompt Item to update
 	inquirer.prompt({
 	 	name: "item",
         type: "rawlist",
@@ -78,6 +77,7 @@ var updateInventory = function(){
 	 }).then(function(answer){
 
 	 	// console.log("Item to Add::" + answer.item);
+
 	 	// Spilt the item selected to get itemId and current stock
 	 	var updateItemArr = answer.item.split(".");
 	 	var updateItemId = updateItemArr[0];
@@ -85,6 +85,7 @@ var updateInventory = function(){
 
 	 	// console.log("item Id to update:" + updateItemId);
 
+	 	// prompt number of items to add
 	 	inquirer.prompt({
 	 		name: "quantity",
 	 		type: "input",
@@ -96,15 +97,17 @@ var updateInventory = function(){
 
 	 		// console.log("Current Stock of number of items" + newStockQuantity);
 
-	 		connection.query("UPDATE bamazondb.products SET ? WHERE ?", [{
+	 		// Update Inventory
+	 		connection.query("UPDATE bamazondb.products set ? where ?", [{
 			    stockQuantity: newStockQuantity
 			}, {
 			    itemId: updateItemId
 			}], function(err, res) {
 					if(err) throw err;
-					console.log("\n"+ "Stock Updated" + "\n");
-					// Repopulate products array
+					console.log("\n"+ "Stock Updated!! " + "\n");
+					// Empty products array
 					productArr.splice(0, productArr.length);
+					// Repopulate products array with new stock
 					fillProductsArr();
 					start();
 			});
@@ -114,6 +117,55 @@ var updateInventory = function(){
 	 });
 }
 
+var addProduct = function(){
+	inquirer.prompt([{
+		name: "pName",
+        type: "input",
+        message: "Enter Product Name : "
+      },{
+      	name: "pDept",
+        type: "input",
+        message: "Enter Department : "
+      },{
+      	name: "pPrice",
+        type: "input",
+        message: "Enter Product Price : ",
+        validate: function(value) {
+            if (isNaN(value) == false) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },{
+    	name: "pQuantity",
+        type: "input",
+        message: "Number of items to add : ",
+        validate: function(value) {
+            if (isNaN(value) == false) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+	}]).then(function(answer){
+		// add product query
+		connection.query("insert into bamazondb.products set ?", {
+            productName: answer.pName,
+            departmentName: answer.pDept,
+            price: answer.pPrice,
+            stockQuantity: answer.pQuantity
+        }, function(err, res) {
+            console.log("Your product added successfully!");
+            // Empty products array
+			productArr.splice(0, productArr.length);
+			// Repopulate products array with new stock
+			fillProductsArr();
+            start();
+        });
+
+	});
+}
 
 var start = function(){
 	 inquirer.prompt({
@@ -130,6 +182,8 @@ var start = function(){
 	 		viewLowInventory();
 	 	}else if(answer.task == "Add to Inventory"){
 	 		updateInventory();
+	 	}else if (answer.task == "Add New Product") {
+	 		addProduct();
 	 	}
 
 	 });
