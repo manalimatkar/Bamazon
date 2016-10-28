@@ -19,25 +19,29 @@ connection.connect(function(err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
 });
+
+
+
+var productsDisplay = function(){
 // display products details in table using console.table package
-connection.query('select * from bamazondb.products',function(err,result){
-	if(err) throw err;
-	console.log("----------------------------------------------------------------------------------------------");
-	console.table(result);	
-	console.log("-----------------------------------------------------------------------------------------------");
+    connection.query('select * from bamazondb.products',function(err,result){
+    	if(err) throw err;
+    	console.log("\n"+"----------------------------------------------------------------------------------------------");
+    	console.table(result);	
+    	console.log("\n"+"-----------------------------------------------------------------------------------------------");
 
-	// store the result in array
-	for(var i=0; i<result.length; i++){
-		productArr.push(result[i]);		
-	}
-	// console.log("Products Array"+ JSON.stringify(productArr));
+    	// store the result in array
+    	for(var i=0; i<result.length; i++){
+    		productArr.push(result[i]);		
+    	}
+    	// console.log("Products Array"+ JSON.stringify(productArr));
 
-	//Start Prompts
-	start();
+    	//Start Prompts
+    	start();
 
-});
-
-
+    });
+}
+productsDisplay();
 var start = function() {
 	//Get the item id 
     inquirer.prompt({
@@ -71,7 +75,7 @@ var start = function() {
 				        choices: ["YES", "NO"]
     	 		 	}).then(function(answer){
     	 		 		// if yes place order
-    	 		 		if (answer.proceed) {
+    	 		 		if (answer.proceed == "YES") {
     	 		 			placeOrder(buyItem.itemId,buyItem.stockQuantity);
     	 		 		}else{
     	 		 			// else ask user to place a new order
@@ -106,9 +110,11 @@ var placeOrder = function(orderItem, orderQuantity){
 		if(err) throw err;
 		console.log("Order Placed For:  " + productArr[orderItem-1].productName + " Number of Items::  " + orderQuantity);
 		console.log("Total Amount To Pay For Order Placed :  " + totalCost);
+        // productsDisplay();
+        start();
 	});
 
-	connection.end();
+	
 
 }
 
