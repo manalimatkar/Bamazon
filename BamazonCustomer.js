@@ -94,7 +94,7 @@ var placeOrder = function(orderItem, orderQuantity){
 	// get purchase price of item selected and calculate total cost
 	var purchasePrice = productArr[orderItem-1].price;
 	var totalCost = purchasePrice * orderQuantity;
-	console.log("Total Amount To Pay For Order Placed :  " + totalCost);
+	
 	// get new number of items in stock 
 	var curStock = productArr[orderItem-1].stockQuantity - orderQuantity;
 	// Update the database for the stock of item purchased
@@ -105,7 +105,10 @@ var placeOrder = function(orderItem, orderQuantity){
 	}], function(err, res) {
 		if(err) throw err;
 		console.log("Order Placed For:  " + productArr[orderItem-1].productName + " Number of Items::  " + orderQuantity);
+		console.log("Total Amount To Pay For Order Placed :  " + totalCost);
 	});
+
+	connection.end();
 
 }
 
