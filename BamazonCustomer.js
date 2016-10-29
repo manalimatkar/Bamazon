@@ -48,7 +48,7 @@ var start = function() {
         name: "item",
         type: "input",
         message: "Please enter the id of the product you would like to buy?"
-    }).then(function(answer) {
+    }).then(function(answer){
     	//Get the item from product array and check the item's stockQuantity
     	var buyItem = productArr[answer.item - 1];
     	//  if item is in stock prompt user to input the quantity
@@ -98,6 +98,9 @@ var placeOrder = function(orderItem, orderQuantity){
 	// get purchase price of item selected and calculate total cost
 	var purchasePrice = productArr[orderItem-1].price;
 	var totalCost = purchasePrice * orderQuantity;
+    var departmentVal =  productArr[orderItem-1].departmentName;
+
+    console.log(departmentVal);
 	
 	// get new number of items in stock 
 	var curStock = productArr[orderItem-1].stockQuantity - orderQuantity;
@@ -108,13 +111,32 @@ var placeOrder = function(orderItem, orderQuantity){
 	    itemId: orderItem
 	}], function(err, res) {
 		if(err) throw err;
-		console.log("Order Placed For:  " + productArr[orderItem-1].productName + " Number of Items::  " + orderQuantity);
-		console.log("Total Amount To Pay For Order Placed :  " + totalCost);
-        // productsDisplay();
-        start();
+		console.log("\n"+"Order Placed For:  " + productArr[orderItem-1].productName + "\n" + " Number of Items::  " + orderQuantity);
+		console.log("\n"+"Total Amount To Pay For Order Placed :  " + totalCost + "\n");      
 	});
 
-	
+    connection.query("select departments.totalSales,departments.departmentName from bamazondb.departments where ?", [{
+        departmentName: departmentVal
+    }], function(err, res) {
+        if(err) throw err;      
+        var currentTotalSale = res[0].totalSales;
+        console.log(currentTotalSale);
+        var totalSalePostTransaction = currentTotalSale + totalCost;
+        updateTotalSales(totalSalePostTransaction, departmentVal);               
+    });	
 
 }
+var updateTotalSales = function(salesTotal,department){
+    console.log("indside update totalsales" + salesTotal + "   " + department)
+    connection.query("UPDATE bamazondb.departments SET ? WHERE ?", [{
+            totalSales: salesTotal
+        },{
+            departmentName: department
+        }],function(err, res) {
+                if(err) throw err;
+                // console.log(res);
+                productsDisplay(); 
+    });
 
+
+}
